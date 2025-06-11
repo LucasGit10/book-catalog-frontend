@@ -28,7 +28,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   </span>
                 </h1>
               </div>
-              <Drawer />
             </div>
           </header>
           <main>{children}</main>

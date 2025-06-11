@@ -34,8 +34,12 @@ export const api = {
     }),
 
   removerLivro: (id: number) =>
-    request(`/livros/${id}`, {
-      method: 'DELETE',
+    request(`/livros/deletar/${id}`, { method: 'DELETE' }),
+
+  editarLivro: (id: number, data: Partial<{ title: string; author: string; year: string; genre: string; description?: string }>) =>
+    request(`/livros/editar/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
     }),
 
   listarReviews: () => request('/livros/reviews'), // ✅ Adicionada aqui
