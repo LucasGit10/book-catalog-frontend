@@ -185,7 +185,7 @@ export default function ListaLivros() {
 
                 <BookForm
                   onSuccess={editBook ? handleEditBookSuccess : handleNewBookSuccess}
-                  bookToEdit={editBook ? { ...editBook, description: (editBook as any).description ?? '' } : null}
+                  bookToEdit={editBook ? { ...editBook, description: (editBook.description || '') } : null}
                 />
               </motion.div>
             </motion.div>
