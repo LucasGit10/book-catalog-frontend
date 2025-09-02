@@ -102,8 +102,13 @@ export default function DetalheDoLivro() {
 
       setRating(5);
       setComment('');
-    } catch (err: any) {
-      alert('Erro ao enviar avaliação: ' + err.message);
+    } catch (err: unknown) { // CORREÇÃO AQUI
+      // Verifica se o erro é uma instância de Error antes de acessar a propriedade 'message'
+      if (err instanceof Error) {
+        alert('Erro ao enviar avaliação: ' + err.message);
+      } else {
+        alert('Erro ao enviar avaliação.');
+      }
     } finally {
       setIsSubmitting(false);
     }
