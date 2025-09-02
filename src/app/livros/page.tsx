@@ -13,7 +13,7 @@ interface Livro {
   author: string;
   year: string;
   genre: string;
-  description?: string;
+  description?: string; // Adicione esta linha
 }
 
 export default function ListaLivros() {
@@ -31,7 +31,7 @@ export default function ListaLivros() {
       try {
         const data = await api.listarLivros();
         setBooks(data as Livro[]);
-      } catch (err) {
+      } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
       } finally {
         setLoading(false);
@@ -41,27 +41,24 @@ export default function ListaLivros() {
     loadBooks();
   }, []);
 
-  // Atualiza lista após criar ou editar
   const refreshBooks = async () => {
     setLoading(true);
     try {
       const data = await api.listarLivros();
       setBooks(data as Livro[]);
-    } catch (err) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
       setLoading(false);
     }
   };
 
-  // Callback após criar livro
   const handleNewBookSuccess = () => {
     setShowForm(false);
     setEditBook(null);
     refreshBooks();
   };
 
-  // Callback após editar livro
   const handleEditBookSuccess = () => {
     setShowForm(false);
     setEditBook(null);
@@ -82,7 +79,7 @@ export default function ListaLivros() {
       try {
         await api.removerLivro(book.id);
         refreshBooks();
-      } catch (err) {
+      } catch (err: unknown) {
         alert(err instanceof Error ? err.message : 'Erro ao deletar');
       }
     }
@@ -174,7 +171,7 @@ export default function ListaLivros() {
                 animate={{ y: 0, scale: 1 }}
                 exit={{ y: 20, opacity: 0 }}
                 className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl"
-                onClick={(e: { stopPropagation: () => any; }) => e.stopPropagation()}
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
               >
                 <button
                   onClick={() => setShowForm(false)}
