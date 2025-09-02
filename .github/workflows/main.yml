@@ -34,7 +34,7 @@ jobs:
             # Navega para o diretório da sua aplicação
             cd /caminho/para/seu/app # Ex: /home/ec2-user/meu-app-next
             
-            # Puxa as últimas alterações do repositório
+            # Puxa as últimas alterações ado repositório
             git pull origin main
             
             # Instala as dependências de produção
