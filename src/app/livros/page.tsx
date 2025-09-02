@@ -13,6 +13,7 @@ interface Livro {
   author: string;
   year: string;
   genre: string;
+  description?: string;
 }
 
 export default function ListaLivros() {
@@ -173,7 +174,7 @@ export default function ListaLivros() {
                 animate={{ y: 0, scale: 1 }}
                 exit={{ y: 20, opacity: 0 }}
                 className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e: { stopPropagation: () => any; }) => e.stopPropagation()}
               >
                 <button
                   onClick={() => setShowForm(false)}
