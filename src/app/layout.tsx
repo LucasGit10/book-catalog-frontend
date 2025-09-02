@@ -1,7 +1,6 @@
 import './globals.css';
 import { ReactNode } from 'react';
 import { BookProvider } from '@/context/BookContext';
-import Drawer from '@/components/Drawer';
 
 export const metadata = {
   title: 'Cadastro de Livros',
