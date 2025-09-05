@@ -3,7 +3,7 @@ name: Deploy Next.js to AWS EC2
 on:
   push:
     branches:
-      - master
+      - master # Ou a branch que você usa para produção, ex: main
 
 jobs:
   deploy:
@@ -11,38 +11,43 @@ jobs:
     environment: aws
 
     steps:
-      - name: Checkout Repository
+      - name: 1. Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: 2. Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install Dependencies
+      - name: 3. Install Dependencies
         run: npm install
 
-      - name: Build
+      - name: 4. Build Application
         run: npm run build
 
-      - name: Deploy to EC2
+      - name: 5. Copy Built Files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_KEY }}
+          port: 22
+          source: ".next, public, package.json, package-lock.json, next.config.js" # Arquivos e pastas a serem copiados
+          target: "/home/ubuntu/meu-app-next" # Onde a app está no seu servidor
+
+      - name: 6. Run Commands on EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_EC2_HOST }}
           username: ${{ secrets.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_KEY }}
           script: |
-            # Navega para o diretório da sua aplicação
-            cd /caminho/para/seu/app # Ex: /home/ec2-user/meu-app-next
+            # Navega para o diretório da aplicação
+            cd /home/ubuntu/meu-app-next
             
-            # Puxa as últimas alterações do repositório
-            git pull origin main
-            
-            # Instala as dependências de produção
+            # Instala apenas as dependências de produção
             npm install --production
             
-            # Builda a aplicação
-            npm run build
-            
-            # Reinicia a aplicação com o PM2
-            pm2 restart nome-da-sua-app || pm2 start npm --name "nome-da-sua-app" -- start
+            # Reinicia a aplicação com PM2 para aplicar as mudanças
+            # O 'reload' é melhor que 'restart' pois não há downtime
+            pm2 reload meu-app-next || pm2 start npm --name "meu-app-next" -- start
