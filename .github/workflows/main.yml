@@ -7,8 +7,9 @@ on:
 
 jobs:
   deploy:
+    environment: aws
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,15 +31,8 @@ jobs:
           username: deployuser
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # Navegue para o diretório do seu projeto
             cd /home/deployuser/book-catalog-frontend
-
-            # Faça um pull do código
             git pull
-
-            # Instale novas dependências e faça o build
             npm install
             npm run build
-
-            # Reinicie o aplicativo com PM2
             pm2 reload nextjs-app
