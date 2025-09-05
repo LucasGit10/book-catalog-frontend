@@ -30,6 +30,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: deployuser
           key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd /home/deployuser/book-catalog-frontend
             git pull
