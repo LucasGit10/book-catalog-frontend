@@ -1,53 +1,44 @@
-name: Deploy Next.js to AWS EC2
+name: Deploy Next.js to DigitalOcean Droplet
 
 on:
   push:
     branches:
-      - master # Ou a branch que você usa para produção, ex: main
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: aws
 
     steps:
-      - name: 1. Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: 2. Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: 3. Install Dependencies
-        run: npm install
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build
 
-      - name: 4. Build Application
-        run: npm run build
-
-      - name: 5. Copy Built Files to EC2
-        uses: appleboy/scp-action@master
+      - name: Deploy to Droplet via SSH
+        uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_KEY }}
-          port: 22
-          source: ".next, public, package.json, package-lock.json, next.config.js" # Arquivos e pastas a serem copiados
-          target: "/home/ubuntu/meu-app-next" # Onde a app está no seu servidor
-
-      - name: 6. Run Commands on EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: deployuser
+          key: ${{ secrets.SSH_KEY }}
           script: |
-            # Navega para o diretório da aplicação
-            cd /home/ubuntu/meu-app-next
-            
-            # Instala apenas as dependências de produção
-            npm install --production
-            
-            # Reinicia a aplicação com PM2 para aplicar as mudanças
-            # O 'reload' é melhor que 'restart' pois não há downtime
-            pm2 reload meu-app-next || pm2 start npm --name "meu-app-next" -- start
+            # Navegue para o diretório do seu projeto
+            cd /home/deployuser/book-catalog-frontend
+
+            # Faça um pull do código
+            git pull
+
+            # Instale novas dependências e faça o build
+            npm install
+            npm run build
+
+            # Reinicie o aplicativo com PM2
+            pm2 reload nextjs-app
